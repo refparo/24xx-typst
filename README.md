@@ -6,7 +6,7 @@ The Simplified Chinese translation of 24XX SRD is also in this repo (`24xx-zh.ty
 
 Fonts used:
 
-- Barlow
+- Barlow (including Condensed and Semi-Condensed versions)
 - IBM Plex Sans (for `₡`)
 - Noto Sans CJK SC (for `➡` and `▶`, and the Simplified Chinese translation)
 
