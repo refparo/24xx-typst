@@ -122,11 +122,11 @@
   [*5+*], [*Success.* The higher the roll, the better.]
 )
 
-If success can’t get you what you want _(you make the shot, but it’s bulletproof!)_, you’ll at least get useful info or set up an advantage.
+If success can’t get you what you want (_you make the shot, but it’s bulletproof!_), you’ll at least get useful info or set up an advantage.
 
 *LOAD:* Carry as much as makes sense, but more than one _bulky_ item may hinder you at times.
 
-*ADVANCEMENT:* After a job, each character increases a skill _(none ➡ d8 ➡ d10 ➡ d12)_ and gains d6 credits (₡).
+*ADVANCEMENT:* After a job, each character increases a skill (_none ➡ d8 ➡ d10 ➡ d12_) and gains d6 credits (₡).
 
 *DEFENSE:* Say how one of your items _breaks_ to turn a hit into a brief _hindrance_. _Broken_ gear is useless until repaired.
 
@@ -203,7 +203,7 @@ _Climbing, Connections, Deception, Electronics, Engines, Explosives, Hacking, Ha
 
 #design-note[Additional character and setting details often need to be customized for specific settings (especially when aliens and fashion are involved). Feel free to draw from these options, which should work in a range of sci-fi settings.]
 
-== Invent or roll for personal details.
+== Invent or roll for *personal details*.
 
 *SURNAME*
 
