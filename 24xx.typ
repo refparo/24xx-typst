@@ -1,39 +1,29 @@
-// all fonts are available in the Typst web app
-#let body-font = arguments(
-  font: ("Barlow", "Noto Sans CJK SC"),
+// inline styling
+
+#set text(
+  9pt, top-edge: 9pt, luma(10%),
+  font: "Barlow",
   stretch: 87.5%,
   number-width: "tabular",
 )
-#let heading-font = arguments(
-  font: ("Barlow", "Noto Sans CJK SC"),
-  stretch: 75%,
-  number-width: "tabular",
-)
-
-#set text(
-  9pt, top-edge: 9pt,
-  luma(10%),
-  ..body-font,
-)
 #show "₡": set text(font: "IBM Plex Sans", stretch: 100%)
-#show "➡": set text(7.5pt)
+#show "➡": set text(7.5pt, font: "Noto Sans CJK SC")
 
-// grid: 9pt line + 3pt leading
+// block styling
+
 #let leading = 3pt
-#let line-height = 12pt
-#let par-spacing = line-height / 2 + leading
+#let top-edge = 9pt
+#let line-height = leading + top-edge
+#let block-spacing = line-height / 2 + leading
 
-#set block(spacing: 0pt)
+#set block(spacing: block-spacing)
 
 #set par(leading: leading)
-#show par: set block(spacing: par-spacing)
 
-#show heading: set block(spacing: 0pt)
 #show heading.where(level: 1): upper
 #show heading.where(level: 1): set text(
   36pt, top-edge: 25.5pt,
-  weight: 500,
-  ..heading-font
+  weight: 500, stretch: 75%,
 )
 #show heading.where(level: 1): it => {
   set block(below: 4 * line-height - leading - text.top-edge)
@@ -42,20 +32,28 @@
 
 #let marked(marker, gap, content) = context block(
   inset: (left: -(gap + measure(marker).width)),
-  spacing: par-spacing,
+  spacing: block-spacing,
   grid(
     columns: (auto, 1fr),
     column-gutter: gap,
     marker, content
   )
 )
+#show heading.where(level: 2): it => {
+  set text(9pt, rgb(255, 47, 23), weight: 400)
+  marked(
+    text(
+      6pt, baseline: -0.75pt,
+      font: "Noto Sans CJK SC",
+      "▶"
+    ),
+    2pt,
+    it.body
+  )
+}
 #let design-note(text-fill: rgb(50, 165, 194), content) = {
   set text(text-fill, style: "italic")
   marked(text(tracking: -1pt, "//"), 2.5pt, content)
-}
-#show heading.where(level: 2): it => {
-  set text(9pt, rgb(232, 72, 45), weight: 400)
-  marked(text(6pt, baseline: -0.75pt, "▶"), 2pt, it.body)
 }
 
 #set enum(numbering: "1", body-indent: 1em)
@@ -68,20 +66,35 @@
   )
   block(
     height: line-height * line-count - par.leading,
-    spacing: par-spacing,
+    spacing: block-spacing,
     columns(count, gutter: (100% - measure(body).width * count) / count, block(body))
   )
 }
+
+#let footer(body) = {
+  set text(
+    7pt, top-edge: 6pt, rgb(133, 142, 140),
+    style: "italic"
+  )
+  set par(leading: 3pt)
+  body
+}
+
+// document styling
 
 #set document(
   title: "24XX System Reference Document",
   author: "Jason Tocci"
 )
 
-#set page(
-  paper: "us-statement",
-  margin: 0pt,
-)
+#set page(paper: "us-statement")
+#set columns(gutter: 18pt)
+
+// ===================
+// content begins here
+// ===================
+
+#set page(margin: 0pt)
 
 #place(image("cover.png"))
 
@@ -89,19 +102,26 @@
 // so this is a rough emulation
 #block(
   width: 100%, height: 100%,
+  inset: 18pt,
   fill: rgb(92.5%, 92.5%, 100%, 6%),
-  inset: 18pt
 )[
   #set par(leading: 0pt)
-  = #text(fill: rgb(70%, 70%, 100%, 22.5%))[
-    #text(125pt, top-edge: 89pt)[
-      #h(-6pt)#text(stretch: 87.5%)[24]XX
-    ] \
-    #text(21pt, top-edge: 23.5pt)[#upper[System Reference Document]]
-  ]
+  #set text(fill: rgb(70%, 70%, 100%, 22.5%))
+  = #stack(
+    {
+      set text(125pt, top-edge: 89pt)
+      h(-6pt)
+      text(stretch: 87.5%)[24]
+      text(stretch: 75%)[XX]
+    },
+    text(21pt, top-edge: 23.5pt)[
+      #upper[System Reference Document]
+    ]
+  )
 ]
 
-#set columns(gutter: 18pt)
+// page 1
+
 #set page(
   margin: 18pt,
   columns: 2,
@@ -168,6 +188,8 @@ If success can’t get you what you want (_you make the shot, but it’s bulletp
 _Climbing, Connections, Deception, Electronics, Engines, Explosives, Hacking, Hand-to-hand, Intimidation, Labor, Persuasion, Piloting, Running, Shooting, Spacewalking, Stealth, Tracking_
 
 #design-note[Characters who start with broader skills should start with fewer skills, or with less useful skills.]
+
+// page 2
 
 = Gear
 
@@ -305,12 +327,13 @@ _Climbing, Connections, Deception, Electronics, Engines, Explosives, Hacking, Ha
   + _Wayfarer_
 ]
 
+// back page
+
 #set page(
-  margin: (top: par-spacing),
-  footer-descent: 4.5pt,
-  footer: [
-    #set text(7.5pt, style: "italic", fill: rgb(133, 142, 140))
-    Version 1.41.typ • Text, layout & 24XX logo all CC BY Jason Tocci • Art CC BY Beeple (Mike Winkelmann) • Typst version CC BY Paro
+  margin: (top: 18pt - block-spacing),
+  footer-descent: 6pt,
+  footer: footer[
+    Version 1.41.typ.2 • Text, layout & 24XX logo all CC BY Jason Tocci • Art CC BY Beeple (Mike Winkelmann) • Typst version CC BY Paro
   ],
 )
 
@@ -319,7 +342,7 @@ _Climbing, Connections, Deception, Electronics, Engines, Explosives, Hacking, Ha
 #block(
   fill: rgb(37, 101, 136),
   inset: (bottom: line-height),
-  outset: (x: 7pt, top: par-spacing)
+  outset: (x: 7pt, top: block-spacing)
 )[
   #set text(white, style: "italic")
   #text(tracking: -1pt, "//") *THE PREMISE:* Explain the basics of the setting. If it’s not made clear elsewhere, give a reason for the characters to stick together, and hint at what they’ll spend their time doing.
@@ -363,7 +386,7 @@ _Climbing, Connections, Deception, Electronics, Engines, Explosives, Hacking, Ha
   [5-6], [_Choose between 2 jobs._]
 )
 
-#v(15pt)
+#v(6pt)
 
 #block(inset: (right: 1.5pt))[#design-note[*FINDING JOBS:* Many teams don’t need to look for paying work (e.g., military units). If your game does use this setup, though, dangerous jobs should pay more to cover 1–3 credits in “expenses” for medical treatment, fixing/ replacing broken gear, re-rolling unsavory jobs, or getting through dry spells with no jobs. Also, in the table above, the phrase “owe somebody” is intentionally vague, but may be worth clarifying or alluding to elsewhere (e.g., put a loan shark in your “Contacts” table).]]
 

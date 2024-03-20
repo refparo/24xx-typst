@@ -1,20 +1,11 @@
-// all fonts are available in the Typst web app
-#let body-font = arguments(
-  font: ("Barlow", "Noto Sans CJK SC"),
-  stretch: 87.5%,
-  number-width: "tabular",
-)
-#let heading-font = arguments(
-  font: ("Barlow", "Noto Sans CJK SC"),
-  stretch: 75%,
-  number-width: "tabular",
-)
+// inline styling
 
 #set text(
-  8.5pt, top-edge: 9pt, weight: 350,
-  luma(10%),
+  8.5pt, top-edge: 9pt, luma(10%),
+  font: ("Barlow", "Noto Sans CJK SC"),
+  weight: 350, stretch: 87.5%,
+  number-width: "tabular",
   lang: "zh", region: "cn", script: "hans",
-  ..body-font,
 )
 #show regex("[A-Za-z0-9\s]+"): it => {
   show text.where(size: 8.5pt): text.with(9pt)
@@ -24,26 +15,24 @@
 }
 #show regex("[。．？！，、；：“”‘’『』「」（）【】［］〔〕【】—…~·《》〈〉/]+"): set text(font: "Noto Sans CJK SC")
 #show "₡": set text(font: "IBM Plex Sans", stretch: 100%)
-#show "➡": set text(7.5pt)
+#show "➡": set text(7.5pt, font: "Noto Sans CJK SC")
 
 #show emph: set text(rgb(37, 101, 136))
 
-// grid: 9pt line + 3pt leading
-#let leading = 3pt
-#let line-height = 12pt
-#let par-spacing = line-height / 2 + leading
+// block styling
 
-#set block(spacing: 0pt)
+#let leading = 3pt
+#let top-edge = 9pt
+#let line-height = leading + top-edge
+#let block-spacing = line-height / 2 + leading
+
+#set block(spacing: block-spacing)
 
 #set par(leading: leading, justify: true)
-#show par: set block(spacing: par-spacing)
 
-#show heading: set block(spacing: 0pt)
-#show heading.where(level: 1): upper
 #show heading.where(level: 1): set text(
   30pt, top-edge: 25.5pt, baseline: -1.5pt,
   weight: 500,
-  ..heading-font
 )
 #show heading.where(level: 1): it => {
   set block(below: 4 * line-height - leading - text.top-edge)
@@ -52,20 +41,31 @@
 
 #let marked(marker, gap, content) = context block(
   inset: (left: -(gap + measure(marker).width)),
-  spacing: par-spacing,
+  spacing: block-spacing,
   grid(
     columns: (auto, 1fr),
     column-gutter: gap,
     marker, content
   )
 )
+#show heading.where(level: 2): it => {
+  set text(
+    8.5pt, top-edge: 9pt, rgb(255, 47, 23),
+    weight: 350,
+  )
+  marked(
+    text(
+      6pt, baseline: -0.75pt,
+      font: "Noto Sans CJK SC",
+      "▶"
+    ),
+    2pt,
+    it.body
+  )
+}
 #let design-note(text-fill: rgb(50, 165, 194), content) = {
   set text(text-fill, style: "italic")
   marked(text(tracking: -1pt, "//"), 2.5pt, content)
-}
-#show heading.where(level: 2): it => {
-  set text(9pt, rgb(232, 72, 45), weight: 350)
-  marked(text(6pt, baseline: -0.75pt, "▶"), 2pt, it.body)
 }
 
 #set enum(numbering: "1", body-indent: 1em)
@@ -78,10 +78,21 @@
   )
   block(
     height: line-height * line-count - par.leading,
-    spacing: par-spacing,
+    spacing: block-spacing,
     columns(count, gutter: (100% - measure(body).width * count) / count, block(body))
   )
 }
+
+#let footer(body) = {
+  set text(
+    7pt, top-edge: 6pt, rgb(133, 142, 140),
+    style: "italic"
+  )
+  set par(leading: 3pt)
+  body
+}
+
+// document styling
 
 #set document(
   title: "24XX 系统参考文档",
@@ -89,33 +100,51 @@
 )
 
 #let page-margin = (
-  x: (148mm - 8.5pt * 42) / 3,
-  y: (210mm - line-height * 46) / 2,
+  x: (148mm - 8.5pt * 43) / 3,
+  y: (210mm - line-height * 46.5) / 2,
 )
-#set page(
-  paper: "a5",
-  margin: 0pt,
-)
+
+#set page(paper: "a5")
+#set columns(gutter: page-margin.x)
+
+// ===================
+// content begins here
+// ===================
+
+#set page(margin: 0pt)
 
 #place(image("cover.png", width: 100%))
 
+#let heading-line-1 = {
+  set text(125pt, top-edge: 89pt)
+  h(-6pt)
+  text(stretch: 87.5%)[24]
+  text(stretch: 75%)[XX]
+  h(4.5pt)
+}
+#let heading-line-2 = {
+  h(-1.5pt)
+  text(
+    18pt, top-edge: 22pt,
+    "系统参考文档".codepoints().join(h(1fr))
+  )
+}
+
 // Typst currently doesn't support blending modes
 // so this is a rough emulation
-#block(
+#context block(
   width: 100%, height: 100%,
+  inset: page-margin,
   fill: rgb(92.5%, 92.5%, 100%, 6%),
-  inset: page-margin
-)[
-  #set par(leading: 0pt)
-  = #text(fill: rgb(70%, 70%, 100%, 22.5%))[
-    #text(125pt, top-edge: 89pt)[
-      #h(-6pt)#text(stretch: 87.5%)[24]XX
-    ] \
-    #h(-1.5pt)#text(18pt, top-edge: 22pt, "系统参考文档".codepoints().join(h(1fr)))#h(150.5pt)
+  block(width: measure(heading-line-1).width)[
+    #set par(leading: 0pt)
+    #set text(fill: rgb(70%, 70%, 100%, 22.5%))
+    = #stack(heading-line-1, heading-line-2)
   ]
-]
+)
 
-#set columns(gutter: page-margin.x)
+// page 1
+
 #set page(
   margin: page-margin,
   columns: 2,
@@ -146,7 +175,7 @@
 
 *伤害*：伤害需要时间和/或医疗看护才能恢复。死亡时，尽快创建一个新角色加入游戏。参与度优先于真实性。
 
-*GM*：不要用技能骰，而要从角色的行为、给玩家带来的风险和障碍等方面描述你的角色。带领大家设置游戏中不可越过的界限。用_快进、暂停、倒带/重做_等方式控制节奏，确保安全；并且鼓励玩家也这么做。提出你自己也不知道怎么解决的两难问题。不断转换焦点，让每个人都有表现的机会。有需要时，掷骰决定是否该有坏运气（例如用完了弹药，或者碰上了守卫）——投一个骰子，决定是有 (1–2) 麻烦，还是 (3–4) 麻烦的征兆。用即兴裁决填补规则中的空白；休息时，和玩家一起回顾不够好的裁决。
+*GM*：不要用技能骰，而要从角色的行为、给玩家带来的风险和障碍等方面描述你的角色。带领大家设置游戏中不可越过的界限。用_快进、暂停、倒带/重做_等方式控制节奏，确保安全；并且鼓励玩家也这么做。提出你自己也不知道怎么解决的两难问题。不断转换焦点，让每个人都有表现的机会。有需要时，掷骰决定是否该有坏运气（例如用完了弹药，或者碰上了守卫）——投一个骰子决定是有（1–2）麻烦，还是（3–4）麻烦的征兆。用即兴裁决填补规则中的空白；休息时，和玩家一起回顾不够好的裁决。
 
 = 角色
 
@@ -181,6 +210,8 @@
 攀爬，社会关系，欺骗，电子，引擎，爆炸物，骇侵，近战，威吓，体力劳动，游说，驾驶，奔跑，射击，太空行走，隐匿，追踪
 
 #design-note[如果角色的初始技能比这更宽泛，那么应该减少其数目，或者使其没那么有用。]
+
+// page 2
 
 = 装备
 
@@ -318,20 +349,18 @@
   + 旅人号
 ]
 
+// back page
+
 #set page(
   margin: (
-    top: page-margin.y - line-height,
-    bottom: page-margin.y + line-height * 2
+    top: page-margin.y - block-spacing,
+    bottom: page-margin.y + line-height * 3.5
   ),
-  footer-descent: 0pt,
-  footer: [
-    #set text(7pt, top-edge: 7.5pt, style: "italic", fill: rgb(133, 142, 140))
-    #set par(leading: 2.5pt)
-    #show par: set block(spacing: 7.5pt)
-
+  footer-descent: 15pt,
+  footer: footer[
     *译注*：翻译绰号超出了译者的能力范围。“黑杰克”（Blackjack）即纸牌游戏二十一点，但“二十一点”不适合作飞船名。“卡鲁奇”（Caleuche）是智利南部原住民马普切神话中的一艘幽灵船。
 
-    版本 1.41-typ • 文本、排版和 24XX logo 均 CC BY Jason Tocci • 美术 CC BY Beeple (Mike Winkelmann) • 中文翻译 CC BY Paro
+    版本 1.41.typ.2 • 文本、排版和 24XX logo 均 CC BY Jason Tocci • 美术 CC BY Beeple (Mike Winkelmann) • 中文翻译 CC BY Paro
   ]
 )
 
@@ -340,10 +369,10 @@
 #block(
   fill: rgb(37, 101, 136),
   inset: (bottom: line-height),
-  outset: (x: 7pt, top: 12pt)
+  outset: (x: 7pt, top: 15pt)
 )[
   #set text(white, style: "italic")
-  #text(tracking: -1pt, "//") *开端*：解释设定的基本要素。如果没在其它地方解释清楚，那么给出一个让角色团结起来的理由，并且提示角色应该把大部分时间用在什么活动上。
+  #text(tracking: -1pt, "//") *开端*：解释设定的基本要素。如果在其它地方还没有解释清楚，那么给出一个让角色团结起来的理由，并且提示角色应该把大部分时间用在什么活动上。
 ]
 
 #design-note[*封底*：如果你想模仿这个 SRD 背后的一系列微型 RPG 的风格，这个封底（或者一张信纸尺寸的白纸的一面的左半边）能放下四张 20 个条目的随机表。GM 可以用这些表格为一场即兴游戏生成灵感，比如：“[姓名] 雇了你在 [地点] 执行 [任务]，但有个 [转折]！”下面有一个范例随机表。]
